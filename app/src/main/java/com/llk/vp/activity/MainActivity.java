@@ -24,24 +24,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
-import com.llk.vp.FlippableStackView;
+import com.llk.vp.OrientedViewPager;
 import com.llk.vp.R;
-import com.llk.vp.StackPageTransformer;
+import com.llk.vp.StackTransformer;
 import com.llk.vp.fragment.ColorFragment;
 import com.llk.vp.utilities.ValueInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Bartosz Lipinski
- * 12.12.14
- */
 public class MainActivity extends ActionBarActivity {
 
     private static final int NUMBER_OF_FRAGMENTS = 15;
 
-    private FlippableStackView mFlippableStack;
+    private OrientedViewPager mOrientedViewPager;
 
     private ColorFragmentAdapter mPageAdapter;
 
@@ -56,11 +52,16 @@ public class MainActivity extends ActionBarActivity {
         createViewPagerFragments();
         mPageAdapter = new ColorFragmentAdapter(getSupportFragmentManager(), mViewPagerFragments);
 
-//        boolean portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        mOrientedViewPager = (OrientedViewPager) findViewById(R.id.flippable_stack_view);
+        mOrientedViewPager.setOrientation(OrientedViewPager.Orientation.VERTICAL);
 
-        mFlippableStack = (FlippableStackView) findViewById(R.id.flippable_stack_view);
-        mFlippableStack.initStack(1, StackPageTransformer.Orientation.VERTICAL);
-        mFlippableStack.setAdapter(mPageAdapter);
+        mOrientedViewPager.setOffscreenPageLimit(4);
+
+        mOrientedViewPager.setPageTransformer(false,
+                new StackTransformer());
+
+        mOrientedViewPager.setAdapter(mPageAdapter);
+        mOrientedViewPager.setCurrentItem(mPageAdapter.getCount() - 1);
     }
 
     private void createViewPagerFragments() {
@@ -105,17 +106,21 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void click_1(View view){
-        mFlippableStack.setCurrentItem(5, true);
+        //        mOrientedViewPager.setCurrentItemInternal(i, true, true, 600);
+//        mOrientedViewPager.setCurrentItem(5, true);
+        mOrientedViewPager.setStackCurrentItem(5, 3000);
     }
 
     public void click_2(View view){
-        int i = (mFlippableStack.getCurrentItem() - 1) < 0 ? 0 : (mFlippableStack.getCurrentItem() - 1);
-        mFlippableStack.setCurrentItem(i);
+        int i = (mOrientedViewPager.getCurrentItem() - 1) < 0 ? 0 : (mOrientedViewPager.getCurrentItem() - 1);
+//        mOrientedViewPager.setCurrentItemInternal(i, true, true, 600);
+        mOrientedViewPager.setStackCurrentItem(i, 1000);
     }
 
     public void click_3(View view){
-        int i = (mFlippableStack.getCurrentItem() + 1) > (mViewPagerFragments.size() - 1) ? (mViewPagerFragments.size() - 1) : (mFlippableStack.getCurrentItem() + 1);
-        mFlippableStack.setCurrentItem(i);
+        int i = (mOrientedViewPager.getCurrentItem() + 1) > (mViewPagerFragments.size() - 1) ? (mViewPagerFragments.size() - 1) : (mOrientedViewPager.getCurrentItem() + 1);
+//        mOrientedViewPager.setCurrentItemInternal(i, true, true, 600);
+        mOrientedViewPager.setStackCurrentItem(i, 1000);
     }
 
 }

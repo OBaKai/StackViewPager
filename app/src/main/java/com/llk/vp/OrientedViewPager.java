@@ -1,19 +1,3 @@
-/**
- * Copyright 2015 Bartosz Lipinski
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.llk.vp;
 
 import android.content.Context;
@@ -61,12 +45,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * Created by Bartosz Lipinski
- * Based on castorflex's VerticalViewPager (https://github.com/castorflex/VerticalViewPager)
- *
- * 03.05.15
- */
 public class OrientedViewPager extends ViewGroup {
 
     public enum Orientation {
@@ -89,6 +67,10 @@ public class OrientedViewPager extends ViewGroup {
     private static final int[] LAYOUT_ATTRS = new int[]{
             android.R.attr.layout_gravity
     };
+
+    //TODO llk: mStackPageVelocity、isStackPageScrolling在新增方法setStackCurrentItem时将会被赋值
+    private int mStackPageVelocity = 0;
+    private boolean isStackPageScrolling = false;
 
     /**
      * Used to track what the expected number of items in the adapter should be.
@@ -407,6 +389,9 @@ public class OrientedViewPager extends ViewGroup {
      * @param item Item index to select
      */
     public void setCurrentItem(int item) {
+        //TODO llk: 确保原来逻辑不变
+        isStackPageScrolling = false;
+
         mPopulatePending = false;
         setCurrentItemInternal(item, !mFirstLayout, false);
     }
@@ -418,8 +403,27 @@ public class OrientedViewPager extends ViewGroup {
      * @param smoothScroll True to smoothly scroll to the new item, false to transition immediately
      */
     public void setCurrentItem(int item, boolean smoothScroll) {
+        //TODO llk: 确保原来逻辑不变
+        isStackPageScrolling = false;
+
         mPopulatePending = false;
         setCurrentItemInternal(item, smoothScroll, false);
+    }
+
+    /**
+     * llk：新增setStackCurrentItem方法, 用于解决切换page过快看不见过场动画问题
+     * @param item
+     * @param velocity 切换速率
+     *
+     * isStackPageScrolling该变量将会变成true
+     */
+    //TODO llk: setStackCurrentItem方法位置
+    public void setStackCurrentItem(int item, int velocity){
+        mStackPageVelocity = velocity;
+        isStackPageScrolling = true;
+
+        mPopulatePending = false;
+        setCurrentItemInternal(item, !mFirstLayout, false);
     }
 
     public int getCurrentItem() {
@@ -751,7 +755,15 @@ public class OrientedViewPager extends ViewGroup {
         }
         duration = Math.min(duration, MAX_SETTLE_DURATION);
 
-        mScroller.startScroll(sx, sy, dx, dy, duration);
+        //TODO llk: 增加isStackPageScrolling判断, 使滑动在指定速率下进行
+        if (isStackPageScrolling && mStackPageVelocity > 0){
+            mScroller.startScroll(sx, sy, dx, dy, mStackPageVelocity);
+        }else {
+            mScroller.startScroll(sx, sy, dx, dy, duration);
+        }
+        isStackPageScrolling = false;
+        mStackPageVelocity = 0;
+
         ViewCompat.postInvalidateOnAnimation(this);
     }
 

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="@color/midnight_blue">
 
-    <com.llk.vp.FlippableStackView
+    <com.llk.vp.OrientedViewPager
         android:id="@+id/flippable_stack_view"
         android:layout_width="match_parent"
         android:layout_height="400dp"
