@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">StackViewPager</string>
+    <string name="app">StackView</string>
+    <string name="app_name">使用OrientedViewPager做的</string>
+    <string name="app_name2">直接继承ViewPager做的</string>
 </resources>

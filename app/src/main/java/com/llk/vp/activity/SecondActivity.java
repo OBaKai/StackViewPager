@@ -16,13 +16,14 @@
 
 package com.llk.vp.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.llk.vp.R;
@@ -33,7 +34,7 @@ import com.llk.vp.utilities.ValueInterpolator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecondActivity extends ActionBarActivity {
+public class SecondActivity extends AppCompatActivity {
 
     private static final int NUMBER_OF_FRAGMENTS = 15;
 
@@ -46,6 +47,8 @@ public class SecondActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setTitle(getResources().getString(R.string.app_name2));
 
         setContentView(R.layout.activity_second);
 
@@ -76,7 +79,7 @@ public class SecondActivity extends ActionBarActivity {
         ValueInterpolator interpolatorB = new ValueInterpolator(0, NUMBER_OF_FRAGMENTS - 1, endB, startB);
 
         for (int i = 0; i < NUMBER_OF_FRAGMENTS; ++i) {
-            mViewPagerFragments.add(ColorFragment.newInstance(Color.argb(255, (int) interpolatorR.map(i), (int) interpolatorG.map(i), (int) interpolatorB.map(i))));
+            mViewPagerFragments.add(ColorFragment.newInstance(Color.argb(255, (int) interpolatorR.map(i), (int) interpolatorG.map(i), (int) interpolatorB.map(i)), i));
         }
     }
 
@@ -111,6 +114,11 @@ public class SecondActivity extends ActionBarActivity {
     public void click_3(View view){
         int i = (mViewPager.getCurrentItem() + 1) > (mViewPagerFragments.size() - 1) ? (mViewPagerFragments.size() - 1) : (mViewPager.getCurrentItem() + 1);
         mViewPager.setCurrentItem(i, true);
+    }
+
+    public void click_back(View view){
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
     }
 
 }

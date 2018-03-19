@@ -3,4 +3,12 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fragment_background" />
+    android:background="@drawable/fragment_background" >
+
+    <TextView
+        android:id="@+id/idx"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    </FrameLayout>

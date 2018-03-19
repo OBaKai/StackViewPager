@@ -16,12 +16,13 @@
 
 package com.llk.vp.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.llk.vp.OrientedViewPager;
@@ -33,7 +34,7 @@ import com.llk.vp.utilities.ValueInterpolator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final int NUMBER_OF_FRAGMENTS = 15;
 
@@ -46,6 +47,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
         setContentView(R.layout.activity_main);
 
@@ -82,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
         ValueInterpolator interpolatorB = new ValueInterpolator(0, NUMBER_OF_FRAGMENTS - 1, endB, startB);
 
         for (int i = 0; i < NUMBER_OF_FRAGMENTS; ++i) {
-            mViewPagerFragments.add(ColorFragment.newInstance(Color.argb(255, (int) interpolatorR.map(i), (int) interpolatorG.map(i), (int) interpolatorB.map(i))));
+            mViewPagerFragments.add(ColorFragment.newInstance(Color.argb(255, (int) interpolatorR.map(i), (int) interpolatorG.map(i), (int) interpolatorB.map(i)), i));
         }
     }
 
@@ -121,6 +124,11 @@ public class MainActivity extends ActionBarActivity {
         int i = (mOrientedViewPager.getCurrentItem() + 1) > (mViewPagerFragments.size() - 1) ? (mViewPagerFragments.size() - 1) : (mOrientedViewPager.getCurrentItem() + 1);
 //        mOrientedViewPager.setCurrentItemInternal(i, true, true, 600);
         mOrientedViewPager.setStackCurrentItem(i, 1000);
+    }
+
+    public void click_go(View view){
+        Intent i = new Intent(this, SecondActivity.class);
+        startActivity(i);
     }
 
 }

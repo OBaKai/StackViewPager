@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.llk.vp.R;
 
@@ -23,10 +24,11 @@ public class ColorFragment extends Fragment {
 
     FrameLayout mMainLayout;
 
-    public static ColorFragment newInstance(int backgroundColor) {
+    public static ColorFragment newInstance(int backgroundColor, int idx) {
         ColorFragment fragment = new ColorFragment();
         Bundle bdl = new Bundle();
         bdl.putInt(EXTRA_COLOR, backgroundColor);
+        bdl.putInt("idx", idx);
         fragment.setArguments(bdl);
         return fragment;
     }
@@ -41,6 +43,9 @@ public class ColorFragment extends Fragment {
         LayerDrawable bgDrawable = (LayerDrawable) mMainLayout.getBackground();
         GradientDrawable shape = (GradientDrawable) bgDrawable.findDrawableByLayerId(R.id.background_shape);
         shape.setColor(bdl.getInt(EXTRA_COLOR));
+
+        TextView idxTV = (TextView) v.findViewById(R.id.idx);
+        idxTV.setText("idx = " + bdl.getInt("idx"));
 
         return v;
     }
