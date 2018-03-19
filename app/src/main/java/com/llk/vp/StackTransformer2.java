@@ -12,43 +12,28 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
     private static final float DEFAULT_CURRENT_PAGE_SCALE = 0.9f;
     private static final float DEFAULT_NEXT_PAGE_SCALE = 0.7f;
     private static final float DEFAULT_STACK_HEIGHT_FACTOR = 0.7f;
-    private static final float DEFAULT_STACK_ALPHA_FACTOR = 0.3f;
+    private static final float DEFAULT_STACK_ALPHA_FACTOR = 0.2f;
 
     private float mCurrentPageScale; //当前页大小比例
     private float mNextPageScale;   //堆页大小比例
     private float mStackHeightFactor;   //堆显示高度因素
     private float mStackAlphaFactor;    //堆显示透明度因素
-    //基础的翻页值
-    private int mBaseTranslationValue = 0;
 
     public StackTransformer2() {
-        mBaseTranslationValue = 80;
-
-        initDefaultValues();
-    }
-
-
-    public StackTransformer2(int translationValue) {
-        mBaseTranslationValue = translationValue < 0 ? 0 : translationValue;
-
         initDefaultValues();
     }
 
     /**
      * ViewPage 堆动画参数说明
-     * @param translationValue 基础翻页距离
      * @param currentPageScale 当前页的大小比例 (0, 1]
      * @param nextPageScale    下一页的大小比例 (0, currentPageScale)
      * @param stackHeightFactor 堆的显示高度因素 (0, 1)
      * @param stackAlphaFactor 堆的显示透明度因素 (0, 1)
      */
-    public StackTransformer2(int translationValue,
-                             float currentPageScale,
+    public StackTransformer2(float currentPageScale,
                              float nextPageScale,
                              float stackHeightFactor,
                              float stackAlphaFactor) {
-        mBaseTranslationValue = translationValue < 0 ? 0 : translationValue;
-
         //传入参数校验
         boolean isOk = validateValues(currentPageScale, nextPageScale, stackHeightFactor, stackAlphaFactor);
 
@@ -75,9 +60,6 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
         float baseHeight = page.getHeight();
         float baseWidth = page.getWidth();
 
-        //基础偏移量
-        float baseTranslation = position * mBaseTranslationValue;
-
         if(position <= -1){ //上面看不见的view
             page.setAlpha(0f);
         }
@@ -92,7 +74,7 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
 
             float diffHeight = ((baseHeight * mCurrentPageScale) - (baseHeight * scale));
             float showStackSize = (diffHeight / 2) / mStackHeightFactor;
-            page.setTranslationY(-baseTranslation - showStackSize);
+            page.setTranslationY(-showStackSize);
             page.setTranslationX(baseWidth * position * -1f);
         }
         else if(position <= 1.0f){ //滑出去view
@@ -108,6 +90,9 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
             float showStackSize = (diffHeight / 2) / mStackHeightFactor;
             page.setTranslationY(-showStackSize);
             page.setTranslationX(baseWidth * position * -1f);
+            Log.e("llk", "scale=" + scale
+            + " diffHeight=" + diffHeight
+            + " showStackSize=" + showStackSize);
         }
         else {
             page.setAlpha(0f);
