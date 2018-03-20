@@ -19,21 +19,34 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
     private float mStackHeightFactor;   //堆显示高度因素
     private float mStackAlphaFactor;    //堆显示透明度因素
 
+    //基础的位移距离
+    private int mTranslationDistance = 0;
+
     public StackTransformer2() {
+        mTranslationDistance = 80;
+        initDefaultValues();
+    }
+
+    public StackTransformer2(int distance) {
+        mTranslationDistance = distance < 0 ? 0 : distance;
         initDefaultValues();
     }
 
     /**
      * ViewPage 堆动画参数说明
+     * @param distance 基础的位移距离
      * @param currentPageScale 当前页的大小比例 (0, 1]
      * @param nextPageScale    下一页的大小比例 (0, currentPageScale)
      * @param stackHeightFactor 堆的显示高度因素 (0, 1)
      * @param stackAlphaFactor 堆的显示透明度因素 (0, 1)
      */
-    public StackTransformer2(float currentPageScale,
+    public StackTransformer2(int distance,
+                             float currentPageScale,
                              float nextPageScale,
                              float stackHeightFactor,
                              float stackAlphaFactor) {
+        mTranslationDistance = distance < 0 ? 0 : distance;
+
         //传入参数校验
         boolean isOk = validateValues(currentPageScale, nextPageScale, stackHeightFactor, stackAlphaFactor);
 
@@ -59,12 +72,13 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
     public void transformPage(View page, float position) {
         float baseHeight = page.getHeight();
         float baseWidth = page.getWidth();
+        Log.e("llk", "position=" + position);
 
         if(position <= -1){ //上面看不见的view
             page.setAlpha(0f);
         }
         else if (position <= 0.0f) { //滑进来view
-            page.setAlpha(1.0f + (position * mStackAlphaFactor));
+            page.setAlpha(1.0f + position);
 
             float scale = mCurrentPageScale + (((mCurrentPageScale - mNextPageScale) / 2) * position);
             page.setPivotX(baseWidth / 2f);
@@ -74,13 +88,27 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
 
             float diffHeight = ((baseHeight * mCurrentPageScale) - (baseHeight * scale));
             float showStackSize = (diffHeight / 2) / mStackHeightFactor;
-            page.setTranslationY(-showStackSize);
+            page.setTranslationY(-showStackSize - (position * mTranslationDistance));
             page.setTranslationX(baseWidth * position * -1f);
         }
         else if(position <= 1.0f){ //滑出去view
+            float scale = mCurrentPageScale + (((mCurrentPageScale - mNextPageScale) / 2) * -position);
+            page.setPivotX(baseWidth / 2f);
+            page.setPivotY(baseHeight / 2f);
+            page.setScaleX(scale);
+            page.setScaleY(scale);
+
             page.setAlpha(1.0f - (position * mStackAlphaFactor));
 
-            float scale = mCurrentPageScale + (((mCurrentPageScale - mNextPageScale) / 2) * -position);
+            float diffHeight = ((baseHeight * mCurrentPageScale) - (baseHeight * scale));
+            float showStackSize = (diffHeight / 2) / mStackHeightFactor;
+            page.setTranslationY(-showStackSize);
+            page.setTranslationX(baseWidth * position * -1f);
+        }
+        else if (position < 2.0f){
+            page.setAlpha(1.0f - mStackAlphaFactor);
+
+            float scale = mCurrentPageScale - (mCurrentPageScale - mNextPageScale) / 2;
             page.setPivotX(baseWidth / 2f);
             page.setPivotY(baseHeight / 2f);
             page.setScaleX(scale);
@@ -88,13 +116,9 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
 
             float diffHeight = ((baseHeight * mCurrentPageScale) - (baseHeight * scale));
             float showStackSize = (diffHeight / 2) / mStackHeightFactor;
-            page.setTranslationY(-showStackSize);
+            page.setTranslationY(-showStackSize + (position - 1) * mTranslationDistance);
             page.setTranslationX(baseWidth * position * -1f);
-            Log.e("llk", "scale=" + scale
-            + " diffHeight=" + diffHeight
-            + " showStackSize=" + showStackSize);
-        }
-        else {
+        }else {
             page.setAlpha(0f);
         }
     }
