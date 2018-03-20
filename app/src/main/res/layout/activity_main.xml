@@ -42,7 +42,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="下一个activity"
+        android:text="另一个activity"
         android:onClick="click_go"/>
 
 </LinearLayout>
