@@ -105,7 +105,7 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
             page.setTranslationY(-showStackSize);
             page.setTranslationX(baseWidth * position * -1f);
         }
-        else if (position < 2.0f){
+        else if (position < 1.3f){ //降低跟踪的位置点, 防止第三页提前被看到
             page.setAlpha(1.0f - mStackAlphaFactor);
 
             float scale = mCurrentPageScale - (mCurrentPageScale - mNextPageScale) / 2;
@@ -118,7 +118,8 @@ public class StackTransformer2 implements ViewPager.PageTransformer {
             float showStackSize = (diffHeight / 2) / mStackHeightFactor;
             page.setTranslationY(-showStackSize + (position - 1) * mTranslationDistance);
             page.setTranslationX(baseWidth * position * -1f);
-        }else {
+        }
+        else {
             page.setAlpha(0f);
         }
     }
